@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register</title>
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+</head>
+<body>
+	<div
+		class="container d-flex justify-content-center align-items-center vh-100">
+		<div class="card shadow-lg" style="width: 100%; max-width: 500px;">
+			<div class="card-body">
+				<h2 class="card-title text-center mb-4">Sign Up</h2>
+				<!-- Vùng hiển thị lỗi tổng quát -->
+				<div th:if="${errorMessage}" class="alert alert-danger text-center">
+					<span th:text="${errorMessage}"></span>
+				</div>
+
+				<form th:action="@{/process_register}" method="post"
+					th:object="${user}">
+					<!--username-->
+					<div class="mb-3">
+						<label for="username" class="form-label">Username</label> <input
+							type="text" id="username" class="form-control" th:field="*{username}"
+							placeholder="Enter your username" required />
+						<!-- Hiển thị lỗi cho username -->
+						<div th:if="${#fields.hasErrors('username')}" class="text-danger">
+							<span th:errors="*{username}"></span>
+						</div>
+					</div>
+					
+					<!-- E-mail -->
+					<div class="mb-3">
+						<label for="email" class="form-label">E-mail</label> <input
+							type="email" id="email" class="form-control" th:field="*{email}"
+							placeholder="Enter your email" required />
+						<!-- Hiển thị lỗi cho email -->
+						<div th:if="${#fields.hasErrors('email')}" class="text-danger">
+							<span th:errors="*{email}"></span>
+						</div>
+					</div>
+
+					<!-- Password -->
+					<div class="mb-3">
+						<label for="password" class="form-label">Password</label> <input
+							type="password" id="password" class="form-control"
+							th:field="*{password}" placeholder="Enter your password" required
+							minlength="6" maxlength="10" /> <small
+							class="form-text text-muted">Password must be 6-10
+							characters long.</small>
+						<!-- Hiển thị lỗi cho password -->
+						<div th:if="${#fields.hasErrors('password')}" class="text-danger">
+							<span th:errors="*{password}"></span>
+						</div>
+					</div>
+
+					<!-- First Name -->
+					<div class="mb-3">
+						<label for="fullName" class="form-label">FullName</label> <input
+							type="text" id="fullName" class="form-control"
+							th:field="*{fullName}" placeholder="Enter your fullname"
+							required minlength="2" maxlength="20" />
+						<!-- Hiển thị lỗi cho fullname -->
+						<div th:if="${#fields.hasErrors('fullName')}" class="text-danger">
+							<span th:errors="*{fullName}"></span>
+						</div>
+					</div>
+
+
+					<div class="mb-3">
+					<label>Role: <select name="role">
+							<option value="Admin">Admin</option>
+							<option value="Lecturer">Lecturer</option>
+							<option value="Student">Student</option>
+						
+					</select>
+					</label><br>
+						</div>
+					<!-- Submit Button -->
+					<div class="d-grid">
+						<button type="submit" class="btn btn-primary">Sign Up</button>
+					</div>
+					<div class="d-grid mt-3">
+						<a th:href="@{/login}" class="btn btn-primary"
+							style="background-color: red;">Login</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script src="/webjars/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

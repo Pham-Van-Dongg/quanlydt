@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+package com.example.demo.controller.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,8 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.demo.CustomUserDetails;
-import com.example.demo.entity.User;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.entity.User.User;
+import com.example.demo.repository.User.UserRepository;
+
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.Session;
 

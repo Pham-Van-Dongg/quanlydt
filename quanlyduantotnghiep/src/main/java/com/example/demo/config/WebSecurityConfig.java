@@ -8,7 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import com.example.demo.service.CustomUserDetailsService;
+
+import com.example.demo.service.User.CustomUserDetailsService;
 
 @Configuration
 public class WebSecurityConfig {
@@ -40,7 +41,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/process_register" ,"/register").permitAll() // Cho phép truy cập không cần xác thực
+                .requestMatchers("/process_register" ,"/register", "/**").permitAll() // Cho phép truy cập không cần xác thực
                 
                 .requestMatchers("/webjars/**", "/css/**", "/js/**", "/images/**").permitAll() // Cho phép truy cập file tĩnh
                 .anyRequest().authenticated() // Các yêu cầu khác cần xác thực
@@ -54,7 +55,8 @@ public class WebSecurityConfig {
                 .logoutUrl("/logout") // URL để đăng xuất
                 .logoutSuccessUrl("/login") // Chuyển hướng sau khi đăng xuất
                 .permitAll()
-            );
+            )
+        	.csrf(csrf -> csrf.disable());
         return http.build();
     }
 }

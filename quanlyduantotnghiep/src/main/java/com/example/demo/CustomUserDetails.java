@@ -3,7 +3,8 @@ import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.example.demo.entity.User;
+
+import com.example.demo.entity.User.User;
 
 public class CustomUserDetails implements UserDetails{
 	private User user;

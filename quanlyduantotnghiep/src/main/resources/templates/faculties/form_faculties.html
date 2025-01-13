@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý khoa</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet" href="/index/index_css.css">
+<!-- Bootstrap JS -->
+
+</head>
+<body>
+	<!-- Sidebar -->
+	<div id="sidebar">
+		<div class="sidebar-header">
+			<h3>Quản lý đề tài</h3>
+		</div>
+		<ul class="list-unstyled components">
+			<li><a th:href="@{/faculties}">Khoa</a></li>
+			<li><a href="#">Quản lý giảng viên/sinh viên</a></li>
+			<li><a href="#">Quản lý đánh giá</a></li>
+			<li><a href="#">Quản lý tài liệu</a></li>
+
+		</ul>
+	</div>
+
+	<!-- Content -->
+	<div class="content">
+		<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<div class="container-fluid">
+
+				<button class="navbar-toggler" type="button"
+					data-bs-toggle="collapse" data-bs-target="#navbarNav"
+					aria-controls="navbarNav" aria-expanded="false"
+					aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto">
+						<div class="navbar-brand" th:if="${#authentication.name != 'anonymousUser'}">
+
+							Welcome, <a class="navbar-brand"
+								th:text="${#authentication.principal.fullName}">User</a>
+
+						</div>
+						<li class="nav-item">
+							<form th:action="@{/logout}" method="post">
+								<button type="submit" class="btn btn-danger">Đăng xuất</button>
+							</form>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<div class="container my-4">
+			<h1 class="text-center mb-3">Khoa</h1>
+
+			<a class="btn btn-primary mb-3" id="openModal">Thêm khoa</a>
+
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Tên khoa</th>
+						<th>Mô tả</th>
+						<th>Chức năng</th>
+					</tr>
+				</thead>
+				<tbody id="faculties-table-body">
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Bootstrap JS -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js">
+	</script>
+	<script>
+        // Hàm fetch dữ liệu từ API và hiển thị lên giao diện
+        async function fetchFaculties() {
+            try {
+                const response = await fetch('/faculties/view'); // Gọi API
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                const data = await response.json(); // Parse JSON
+
+                // Hiển thị dữ liệu trong bảng
+                const tableBody = document.getElementById('faculties-table-body');
+                tableBody.innerHTML = ''; // Xóa nội dung cũ
+                data.forEach((faculty, index) => {
+                    const row = `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${faculty.name}</td>
+                            <td>${faculty.description}</td>
+                            <td>
+                        	<a class="btn btn-sm btn-primary" onclick="handleEdit(${faculty.id})">Sửa</a>
+                        	<a class="btn btn-sm btn-danger" onclick="handleDelete(${faculty.id})">Xóa</a>
+                    	</td>
+                        </tr>
+                       
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('Error fetching faculties:', error);
+                document.getElementById('error-message').textContent = 'Failed to load faculties data.';
+            }
+        }
+
+        // Gọi hàm khi trang được tải
+        document.addEventListener('DOMContentLoaded', fetchFaculties);
+    </script>
+</body>
+</html>

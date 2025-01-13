@@ -38,16 +38,6 @@ public class FacultiesController {
     }
 	 @GetMapping("")
 	    public String getFaculties(Model model) {
-//	        // Lấy danh sách faculties từ Service
-//	        List<Faculties> faculties = facultiesService.getFaculties();
-//	        // Đưa danh sách vào Model để truyền tới view
-//	        if(faculties.isEmpty()) {
-//	        	 model.addAttribute("message", "No patients found");
-//	        }
-//	        else {
-//	        	  model.addAttribute("faculties", faculties);
-//	        }
-//	        // Trả về file HTML tên là "faculties.html"
 	        return "faculties/form_faculties";
 	    }
 	
@@ -66,17 +56,13 @@ public class FacultiesController {
     }
 	
     
- // Thêm mới khoa
-//    @PostMapping("/save")
-//    public ResponseEntity<Faculties> addFaculties(@RequestBody Faculties fa) {
-//        Faculties faculties = this.facultiesService.addFaculties(fa);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(faculties);
-//    }	
+  //Thêm mới khoa
     @PostMapping("/save")
-	  public String addFaculties(@ModelAttribute Faculties fa) {
-	      Faculties faculties = this.facultiesService.addFaculties(fa);
-	      return "redirect:/faculties";
-	  }	
+    public ResponseEntity<Faculties> addFaculties(@RequestBody Faculties fa) {
+        Faculties faculties = this.facultiesService.addFaculties(fa);
+        return ResponseEntity.status(HttpStatus.CREATED).body(faculties);
+    }	
+    
     
  // Cập nhật thông tin khoa
     @PutMapping("/{faId}")

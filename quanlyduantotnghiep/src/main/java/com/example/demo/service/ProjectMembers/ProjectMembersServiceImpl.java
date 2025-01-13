@@ -30,6 +30,11 @@ public class ProjectMembersServiceImpl implements ProjectMembersService{
 	}
 
 	@Override
+	public List<ProjectMembers> getProjectMembersByProjectId(long prbId) {
+        return projectMembersRepository.findByProject_Id(prbId);
+	}
+
+	@Override
 	public ProjectMembers updateProjectMembers(long prbId, ProjectMembers prb) {
 		ProjectMembers exit = projectMembersRepository.findById(prbId).orElse(null);
 		

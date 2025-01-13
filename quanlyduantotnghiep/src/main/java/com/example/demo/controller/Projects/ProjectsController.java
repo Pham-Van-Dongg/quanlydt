@@ -51,7 +51,7 @@ public class ProjectsController {
 		}
 
 		// Fetch project members
-		List<ProjectMembers> members = this.projectMembersService.getProjectMembers();
+		List<ProjectMembers> members = this.projectMembersService.getProjectMembersByProjectId(prId);
 
 		// Create a combined response object
 		Map<String, Object> response = new HashMap<>();
@@ -84,6 +84,7 @@ public class ProjectsController {
     @DeleteMapping("/delete/{prId}")
     public ResponseEntity<Void> deleteProjects(@PathVariable long prId) {
         try {
+
             this.projectsService.deleteProjects(prId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {

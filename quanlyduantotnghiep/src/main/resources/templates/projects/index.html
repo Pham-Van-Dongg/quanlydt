@@ -55,19 +55,20 @@
     </nav>
 
     <div class="container my-4">
-        <h1 class="text-center mb-3">Khoa</h1>
+        <h1 class="text-center mb-3">Danh sách dự án</h1>
 
         <a class="btn btn-primary mb-3">Thêm</a>
 
         <table class="table table-bordered">
             <thead>
             <tr>
-                <th>ID</th>
+                <th>STT</th>
                 <th>Tên đề tài</th>
                 <th>Ngày bắt đầu</th>
                 <th>Dự kiến kết thúc</th>
                 <th>Trạng thái</th>
                 <th>Khoa quản lý</th>
+                <th></th>
             </tr>
             </thead>
             <tbody id="project-table-body">
@@ -90,28 +91,43 @@
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
+
             const data = await response.json(); // Parse JSON
 
             // Hiển thị dữ liệu trong bảng
             const tableBody = document.getElementById('project-table-body');
             tableBody.innerHTML = ''; // Xóa nội dung cũ
-            data.forEach((projects, index) => {
-                const row = `
+            data.forEach((project, index) => {
+                try {
+                    let faculty = "n/a";
+                    if (project.faculty.name != null) faculty = project.faculty.name;
+                    const row = `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${project.name}</td>
+                                <td>${project.start_date || "n/a"}</td>
+                                <td>${project.end_date || "n/a"}</td>
+                                <td>${project.status}</td>
+                                <td>${faculty}</td>
+                                <td>
+                                    <a class="btn btn-sm btn-primary" href="/projects/details?id=${project.id}">Chi tiết</a>
+                                </td>
+                            </tr>
+
+                        `;
+                    tableBody.innerHTML += row;
+                }
+                catch (e) {
+                    tableBody.innerHTML += `
                         <tr>
                             <td>${index + 1}</td>
-                            <td>${projects.name}</td>
-                            <td>${projects.start_date || "n/a"}</td>
-                            <td>${projects.end_date || "n/a"}</td>
-                            <td>${projects.status}</td>
-                            <td>${projects.faculty.name}</td>
+                            <td colspan="5" class="text-center">Dự án bị lỗi, xem chi tiết.</td>
                             <td>
-                                <a class="btn btn-sm btn-primary" href="/projects/details?id=${projects.id}">Chi tiết</a>
-                                <a class="btn btn-sm btn-danger" onclick="handleDelete(${projects.id})">Xóa</a>
+                                <a class="btn btn-sm btn-primary" href="/projects/details?id=${project.id}">Chi tiết</a>
                             </td>
-                        </tr>
-
-                    `;
-                tableBody.innerHTML += row;
+                        </tr>`;
+                    console.error("Ignoring faculty prop for this. Apparently someone forgot to seed good data.");
+                }
             });
         } catch (error) {
             console.error('Error fetching faculties:', error);

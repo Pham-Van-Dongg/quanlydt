@@ -44,8 +44,8 @@ public class ProjectMembersController {
 	
 	//lay thong tin theo id
 	@GetMapping("/{prbId}")
-	public ResponseEntity<ProjectMembers> getProjectMembers(@PathVariable long prbId) {
-		ProjectMembers projectMembers = this.projectMembersService.getProjectMembers(prbId);
+	public ResponseEntity<List<ProjectMembers>> getProjectMembers(@PathVariable long prbId) {
+		List<ProjectMembers> projectMembers = this.projectMembersService.getProjectMembersByProjectId(prbId);
 		if(projectMembers == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 		}
@@ -53,7 +53,7 @@ public class ProjectMembersController {
 	}
 	
 	//them moi projectmember
-	@PostMapping("/created")
+	@PostMapping("/create")
 	public ResponseEntity<ProjectMembers> addProjectMembers(@RequestBody ProjectMembers prb) {
 		ProjectMembers pb = this.projectMembersService.addProjectMembers(prb);
 		return ResponseEntity.status(HttpStatus.CREATED).body(pb);

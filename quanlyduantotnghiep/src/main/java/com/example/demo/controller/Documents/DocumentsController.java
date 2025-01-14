@@ -81,8 +81,8 @@ public class DocumentsController {
         }
     }
 
-    @PutMapping("/{docId}")
-    public ResponseEntity<?> updateFaculties(@PathVariable long docId, @RequestBody Documents doc) {
+    @PutMapping("/update/{docId}")
+    public ResponseEntity<String> updateFaculties(@PathVariable long docId, @RequestBody Documents doc) {
         try {
             Documents documents = this.documentsService.updateDocuments(docId, doc);
             if (documents == null) {
@@ -90,10 +90,12 @@ public class DocumentsController {
             }
             return ResponseEntity.ok("Document updated successfully");
         } catch (Exception e) {
+            e.printStackTrace();  // In chi tiết lỗi để kiểm tra
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to update document: " + e.getMessage());
         }
     }
+
 
     @DeleteMapping("/{docId}")
     public ResponseEntity<String> deleteDocuments(@PathVariable long docId) {

@@ -35,10 +35,10 @@ public class ProjectsController {
         return "projects/create";
     }
 
-	@GetMapping("/details")
-	public String projectDetails(Model model) {
-		return "projects/details";
-	}
+    @GetMapping("/details")
+    public String projectDetails(Model model) {
+        return "projects/details";
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<Projects>> getProjects() {
@@ -47,27 +47,27 @@ public class ProjectsController {
     }
 
     //lấy thông tin đề tài theo id
-	@GetMapping("/{prId}")
-	public ResponseEntity<Object> getProjects(@PathVariable int prId) {
-		Projects projects = this.projectsService.getProjects(prId);
+    @GetMapping("/{prId}")
+    public ResponseEntity<Object> getProjects(@PathVariable int prId) {
+        Projects projects = this.projectsService.getProjects(prId);
 
-		if (projects == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
+        if (projects == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
 
-		// Fetch project members
-		List<ProjectMembers> members = this.projectMembersService.getProjectMembersByProjectId(prId);
+        // Fetch project members
+        List<ProjectMembers> members = this.projectMembersService.getProjectMembersByProjectId(prId);
 
-		// Create a combined response object
-		Map<String, Object> response = new HashMap<>();
-		response.put("project", projects);
-		response.put("members", members);
+        // Create a combined response object
+        Map<String, Object> response = new HashMap<>();
+        response.put("project", projects);
+        response.put("members", members);
 
-		return ResponseEntity.ok(response);
-	}
+        return ResponseEntity.ok(response);
+    }
 
 
-	//thêm mới project
+    //thêm mới project
     @PostMapping("/create")
     public ResponseEntity<Projects> addProjects(@RequestBody Projects pr) {
         Projects projects = this.projectsService.addProjects(pr);

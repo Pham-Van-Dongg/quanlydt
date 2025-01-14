@@ -8,8 +8,10 @@ public interface ProjectMembersService {
 	public ProjectMembers addProjectMembers(ProjectMembers prb);
 	
 	public ProjectMembers getProjectMembers(long prbId);
+
+	public List<ProjectMembers> getProjectMembersByProjectId(long prbId);
 	
 	public ProjectMembers updateProjectMembers(long prbId, ProjectMembers prb);
-	
+
 	public ProjectMembers deleteProjectMembers(long id);
 }

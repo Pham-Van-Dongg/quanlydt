@@ -102,8 +102,9 @@
                             <td>${documents.file_path}</td>
                             <td>${documents.uploaded_at}</td>
                             <td>
-                        		<a class="btn btn-sm btn-primary" href="/documents/update">Sửa</a>
+                        		<a class="btn btn-sm btn-primary" href="/documents/update?id=${documents.id}">Sửa</a>
                         		<a class="btn btn-sm btn-danger" onclick="handleDelete(${documents.id})">Xóa</a>
+                        		
                     		</td>
                         </tr>
                        

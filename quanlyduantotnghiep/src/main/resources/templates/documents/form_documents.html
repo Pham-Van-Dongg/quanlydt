@@ -18,9 +18,10 @@
 			<h3>Quản lý đề tài</h3>
 		</div>
 		<ul class="list-unstyled components">
-            <li><a th:href="@{/faculties}">Quản lý đề tài</a></li>
-            <li><a th:href="@{/evaluations}">Quản lý hội đồng đánh giá</a></li>
-            <li><a th:href="@{/documents}">Quản lý tài liệu</a></li>	
+            <li><a th:href="@{/faculties}">Khoa</a></li>
+            <li><a th:href="@{/projects}">Dự án</a></li>
+            <li><a th:href="@{/evaluations}">Hội đồng đánh giá</a></li>
+            <li><a th:href="@{/documents}">Kho tài liệu</a></li>
         </ul>
 	</div>
 
@@ -36,26 +37,24 @@
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse" id="navbarNav">
-					<ul class="navbar-nav ms-auto">
-						<div class="navbar-brand" th:if="${#authentication.name != 'anonymousUser'}">
-
-							Welcome, <a class="navbar-brand"
-								th:text="${#authentication.principal.fullName}">User</a>
-
-						</div>
-						<li class="nav-item">
-							<form th:action="@{/logout}" method="post">
-								<button type="submit" class="btn btn-danger">Đăng xuất</button>
-							</form>
-						</li>
-					</ul>
-				</div>
+                <div class="navbar-nav ms-auto">
+                    <div class="navbar-brand" th:if="${#authentication.name != 'anonymousUser'}">
+                        Welcome, <a class="navbar-brand"
+                                    th:text="${#authentication.principal.fullName}">User</a>
+                    </div>
+                    <div class="nav-item">
+                        <form method="post" th:action="@{/logout}">
+                            <button class="btn btn-danger" type="submit">Đăng xuất</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 			</div>
 		</nav>
 		<div class="container my-4">
 			<h1 class="text-center mb-3">Tài liệu</h1>
 
-			<a class="btn btn-primary mb-3" id="openModal">Thêm tài liệu</a>
+			<a class="btn btn-primary mb-3" href="/documents/create">Thêm</a>
 
 			<table class="table table-bordered">
 				<thead>
@@ -103,9 +102,9 @@
                             <td>${documents.file_path}</td>
                             <td>${documents.uploaded_at}</td>
                             <td>
-                        	<a class="btn btn-sm btn-primary" onclick="handleEdit(${documents.id})">Sửa</a>
-                        	<a class="btn btn-sm btn-danger" onclick="handleDelete(${documents.id})">Xóa</a>
-                    	</td>
+                        		<a class="btn btn-sm btn-primary" href="/documents/update">Sửa</a>
+                        		<a class="btn btn-sm btn-danger" onclick="handleDelete(${documents.id})">Xóa</a>
+                    		</td>
                         </tr>
                        
                     `;
@@ -119,6 +118,32 @@
 
         // Gọi hàm khi trang được tải
         document.addEventListener('DOMContentLoaded', fetchFaculties);
+        
+        
+        
+        async function handleDelete(docId) {
+    	    if (!confirm("Bạn có chắc chắn muốn xóa tài liệu này này?")) {
+    	        return; // Dừng lại nếu người dùng không xác nhận
+    	    }
+    	    try {
+    	        const response = await fetch(`/documents/${docId}`, {
+    	            method: 'DELETE',
+    	        });
+    	        const message = await response.text(); // Lấy thông báo từ server
+
+    	        if (response.ok) {
+    	            alert("Thành công: " + message);
+    	            fetchFaculties(); // Cập nhật lại danh sách khoa
+    	        } else {
+    	            alert("Thất bại: " + message);
+    	        }
+    	    } catch (error) {
+    	        console.error("Error deleting faculty:", error);
+    	        alert("Đã xảy ra lỗi khi xóa tài liệu. Vui lòng thử lại.");
+    	    }
+    	}
+
+        
     </script>
 	
 </body>

@@ -18,9 +18,10 @@
 			<h3>Quản lý đề tài</h3>
 		</div>
 		<ul class="list-unstyled components">
-            <li><a th:href="@{/faculties}">Quản lý đề tài</a></li>
-            <li><a th:href="@{/evaluations}">Quản lý hội đồng đánh giá</a></li>
-            <li><a th:href="@{/documents}">Quản lý tài liệu</a></li>
+            <li><a th:href="@{/faculties}">Khoa</a></li>
+            <li><a th:href="@{/projects}">Dự án</a></li>
+            <li><a th:href="@{/evaluations}">Hội đồng đánh giá</a></li>
+            <li><a th:href="@{/documents}">Kho tài liệu</a></li>
           	
         </ul>
 	</div>
@@ -56,7 +57,7 @@
 		<div class="container my-4">
 			<h1 class="text-center mb-3">Hội đồng chấm thi</h1>
 
-			<a class="btn btn-primary mb-3" id="openModal">Thêm chấm điểm</a>
+			<a class="btn btn-primary mb-3"  href="/evaluations/create">Thêm chấm điểm</a>
 
 			<table class="table table-bordered">
 				<thead>
@@ -122,6 +123,29 @@
 
         // Gọi hàm khi trang được tải
         document.addEventListener('DOMContentLoaded', fetchFaculties);
+        
+        
+        async function handleDelete(evId) {
+    	    if (!confirm("Bạn có chắc chắn muốn xóa hội đồng này?")) {
+    	        return; // Dừng lại nếu người dùng không xác nhận
+    	    }
+    	    try {
+    	        const response = await fetch(`/evaluations/${evId}`, {
+    	            method: 'DELETE',
+    	        });
+    	        const message = await response.text(); // Lấy thông báo từ server
+
+    	        if (response.ok) {
+    	            alert("Thành công: " + message);
+    	            fetchFaculties(); // Cập nhật lại danh sách khoa
+    	        } else {
+    	            alert("Thất bại: " + message);
+    	        }
+    	    } catch (error) {
+    	        console.error("Error deleting faculty:", error);
+    	        alert("Đã xảy ra lỗi khi xóa tài liệu. Vui lòng thử lại.");
+    	    }
+    	}
     </script>
 </body>
 </html>

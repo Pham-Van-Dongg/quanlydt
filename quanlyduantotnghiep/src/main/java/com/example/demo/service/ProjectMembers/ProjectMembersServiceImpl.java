@@ -30,8 +30,13 @@ public class ProjectMembersServiceImpl implements ProjectMembersService{
 	}
 
 	@Override
+	public List<ProjectMembers> getProjectMembersByProjectId(long prbId) {
+        return projectMembersRepository.findByProject_Id(prbId);
+	}
+
+	@Override
 	public ProjectMembers updateProjectMembers(long prbId, ProjectMembers prb) {
-		ProjectMembers exit = projectMembersRepository.findById(prbId).orElse(null);
+		ProjectMembers exit = projectMembersRepository.findById(prb.getId()).orElse(null);
 		
 		if(exit == null) {
 			throw new RuntimeException("ProjectMembers not found with id: " + prbId);

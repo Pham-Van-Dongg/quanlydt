@@ -39,6 +39,11 @@ public class EvaluationsController {
 		return ResponseEntity.ok(evaluations);
 	}
 	
+	@GetMapping("/create")
+    public String createEvaluations(Model model) {
+        return "evaluations/create";
+    }
+	
 	 @GetMapping("")
 	    public String getFaculties(Model model) {
 	        return "evaluations/form_evaluations";
@@ -55,7 +60,7 @@ public class EvaluationsController {
         return ResponseEntity.ok(evaluations);
     }
     
-    @PostMapping("/save")
+    @PostMapping("/create")
 	public ResponseEntity<String> addEvaluations(@RequestBody Evaluations evaluations) {
 	    // Kiểm tra xem dự án có tồn tại không
 	    Projects project = projectsRepository.findById(evaluations.getProject().getId())
@@ -72,25 +77,27 @@ public class EvaluationsController {
     
     
  // Cập nhật thông tin khoa
-   @PutMapping("/{evId}")
-   public ResponseEntity<Evaluations> updateEvaluations(@PathVariable long evId, @RequestBody Evaluations ev) {
-	   Evaluations evaluations = this.evaluationsService.updateEvaluations(evId, ev);
-       if (evaluations == null) {
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-       }
-       return ResponseEntity.ok(evaluations);
-   }
+    @PutMapping("/{evId}")
+    public ResponseEntity<String> updateEvaluations(@PathVariable long evId, @RequestBody Evaluations ev) {
+        Evaluations evaluations = this.evaluationsService.updateEvaluations(evId, ev);
+        if (evaluations == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evaluation not found.");
+        }
+        return ResponseEntity.ok("Evaluation updated successfully.");
+    }
+
    
  // Xóa de tai
-   @DeleteMapping("/{evId}")
-   public ResponseEntity<Void> deleteEvaluations(@PathVariable long evId) {
-       try {
-           this.evaluationsService.deleteEvaluations(evId);
-           return ResponseEntity.ok().build();
-       } catch (Exception e) {
-           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-       }
-   }
+    @DeleteMapping("/{evId}")
+    public ResponseEntity<String> deleteEvaluations(@PathVariable long evId) {
+        try {
+            this.evaluationsService.deleteEvaluations(evId);
+            return ResponseEntity.ok("Evaluation deleted successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the evaluation.");
+        }
+    }
+
     
     
 }

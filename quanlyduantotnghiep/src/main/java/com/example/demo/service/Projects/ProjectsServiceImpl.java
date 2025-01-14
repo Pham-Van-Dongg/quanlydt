@@ -33,11 +33,11 @@ public class ProjectsServiceImpl implements ProjectsService {
 	}
 
 	@Override
-	public Projects updateProjects(long prId, Projects pr) {
-		Projects existingProjects = projectsRepository.findById(prId).orElse(null);
+	public Projects updateProjects(Projects pr) {
+		Projects existingProjects = projectsRepository.findById(pr.getId()).orElse(null);
 		
 		if(existingProjects == null) {
-			throw new RuntimeException("Projects not found with Id: " + prId);
+			throw new RuntimeException("Projects not found with Id: " + pr.getId());
 		}
 		
 		existingProjects.setName(pr.getName());

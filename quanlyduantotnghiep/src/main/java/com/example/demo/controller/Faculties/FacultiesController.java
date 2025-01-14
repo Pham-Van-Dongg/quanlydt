@@ -51,6 +51,11 @@ public class FacultiesController {
 //		return "faculties/form_addFaculties";
 //	}
 
+	@GetMapping("/create")
+    public String createFaculties(Model model) {
+        return "faculties/create";
+    }
+	
 	// Lấy thông tin khoa theo ID
 	@GetMapping("/{faId}")
 	public ResponseEntity<Faculties> getFaculties(@PathVariable long faId) {
@@ -62,19 +67,19 @@ public class FacultiesController {
 	}
 
 	// Thêm mới khoa
-	@PostMapping("/save")
+	@PostMapping("/create")
 	public ResponseEntity<String> addFaculties(@RequestBody Faculties fa) {
 		try {
 			Faculties faculties = this.facultiesService.addFaculties(fa);
 			// Trả về thông báo thành công
 			return ResponseEntity.status(HttpStatus.CREATED)
-					.body("Tạo mới khoa thành công với ID: " + faculties.getId());
+					.body("Tạo mới khoa thành công");
 		} catch (Exception e) {
 			// Trả về thông báo lỗi
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("Tạo mới khoa thất bại. Lỗi: " + e.getMessage());
 		}
-	}
+	} 
 
 	// Cập nhật thông tin khoa
 	@PutMapping("/update/{faId}")
@@ -87,7 +92,7 @@ public class FacultiesController {
 						.body("Không tìm thấy khoa với ID: " + faId + " để cập nhật.");
 			}
 			// Trả về thông báo thành công
-			return ResponseEntity.ok("Cập nhật thành công khoa với ID: " + faId);
+			return ResponseEntity.ok("Cập nhật thành công");
 		} catch (Exception e) {
 			// Trả về thông báo lỗi
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -103,7 +108,7 @@ public class FacultiesController {
 			this.facultiesService.deleteFaculties(faId);
 
 			// Trả về thông báo thành công
-			return ResponseEntity.ok("Xóa thành công khoa có ID: " + faId);
+			return ResponseEntity.ok("Xóa thành công khoa.");
 		} catch (Exception e) {
 			// Trả về thông báo lỗi kèm thông tin lỗi chi tiết
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

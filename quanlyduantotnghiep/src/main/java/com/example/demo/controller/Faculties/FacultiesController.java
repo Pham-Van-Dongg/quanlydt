@@ -6,8 +6,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,18 +21,25 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.entity.Faculties.Faculties;
 import com.example.demo.service.Faculties.FacultiesService;
 
-@RestController
+@Controller
 @RequestMapping("/faculties")
 public class FacultiesController {
 	
 	@Autowired
 	public FacultiesService facultiesService;
 	
-	@GetMapping("")
+	 public FacultiesController(FacultiesService facultiesService) {
+	        this.facultiesService = facultiesService;
+	    }
+	@GetMapping("/view")
 	  public ResponseEntity<List<Faculties>> getFaculties() {
         List<Faculties> faculties = this.facultiesService.getFaculties();
-        return ResponseEntity.ok(faculties);
+       return ResponseEntity.ok(faculties);
     }
+	 @GetMapping("")
+	    public String getFaculties(Model model) {
+	        return "faculties/form_faculties";
+	    }
 	
 //	@GetMapping("/{faId}")
 //	public Faculties getFaculties(@PathVariable long faId) {
@@ -46,13 +56,13 @@ public class FacultiesController {
     }
 	
     
- // Thêm mới khoa
-    @PostMapping("")
+  //Thêm mới khoa
+    @PostMapping("/save")
     public ResponseEntity<Faculties> addFaculties(@RequestBody Faculties fa) {
         Faculties faculties = this.facultiesService.addFaculties(fa);
         return ResponseEntity.status(HttpStatus.CREATED).body(faculties);
-    }
-	
+    }	
+    
     
  // Cập nhật thông tin khoa
     @PutMapping("/{faId}")

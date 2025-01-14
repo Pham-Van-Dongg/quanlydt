@@ -32,8 +32,9 @@ public class ProjectMembersController {
 	    Map<String, List<Map<String, Object>>> groupedMembers = members.stream()
 	        .collect(Collectors.groupingBy(
 	            member -> member.getProject().getName(),
-	            Collectors.mapping(member -> Map.of(
-	                "masinhvien", member.getMasinhvien(),
+	            Collectors.mapping(member -> 
+	            Map.of(
+	            	"masinhvien", member.getMasinhvien(),
 	                "name", member.getName(),
 	                "role", member.getRole()
 	            ), Collectors.toList())

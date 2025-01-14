@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Quản lý khoa</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+    <link href="/index/index_css.css" rel="stylesheet">
+    <!-- Bootstrap JS -->
+
+</head>
+<body>
+<!-- Sidebar -->
+<div id="sidebar">
+    <div class="sidebar-header">
+        <h3>Quản lý đề tài</h3>
+    </div>
+    <ul class="list-unstyled components">
+        <li><a th:href="@{/faculties}">Khoa</a></li>
+        <li><a th:href="@{/projects}">Dự án</a></li>
+        <li><a th:href="@{/evaluations}">Hội đồng đánh giá</a></li>
+        <li><a th:href="@{/documents}">Kho tài liệu</a></li>
+    </ul>
+</div>
+
+<!-- Content -->
+<div class="content">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+
+            <button aria-controls="navbarNav" aria-expanded="false"
+                    aria-label="Toggle navigation" class="navbar-toggler"
+                    data-bs-target="#navbarNav" data-bs-toggle="collapse"
+                    type="button">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-nav ms-auto">
+                <div class="navbar-brand"
+                     th:if="${#authentication.name != 'anonymousUser'}">
+                    Welcome, <a class="navbar-brand"
+                                th:text="${#authentication.principal.fullName}">User</a>
+                </div>
+                <div class="nav-item">
+                    <form method="post" th:action="@{/logout}">
+                        <button class="btn btn-danger" type="submit">Đăng xuất</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container my-4">
+        <div id="project-info-display">
+            <h1 class="text-center mb-3">Thông tin tài liệu</h1>
+            <form id="project-form">
+                <div class="mb-3">
+                    <label class="form-label" for="project-name">Tên dự án</label>
+                    <select class="form-control" id="project-name" name="name">
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="evaluations-date">Ngày đánh giá</label> <input
+                        class="form-control" id="evaluations-date" name="date"
+                        required type="date">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="evaluations-comment">Bình luận</label>
+                    <input class="form-control" id="evaluations-comment" name="comment" required type="text">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="evaluations-points">Điểm</label>
+                    <input class="form-control" id="evaluations-points" name="points"
+                           type="number">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="evaluations-board">Hội đồng chấm thi</label>
+                    <input class="form-control" id="evaluations-board" name="board"
+                           type="text">
+                </div>
+
+                <div class="mb-3">
+                    <button class="btn btn-primary w-100" type="submit">Thêm</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js">
+</script>
+
+<script>
+    let params = new URLSearchParams(document.location.search);
+    let id = params.get("id");
+
+    // Hàm fetch dữ liệu từ API và hiển thị lên giao diện
+    async function fetchProject() {
+        try {
+            const resp = await fetch("/projects/all");
+            const faculties = await resp.json();
+
+            faculties.forEach((e) => {
+                document.getElementById("project-name").innerHTML += `
+                  <option value="${e.id}">${e.name}</option>`;
+            });
+        } catch (error) {
+            console.error("Error fetching faculties:", error);
+            document.getElementById("error-message").textContent =
+                "Failed to load project data.";
+        }
+    }
+
+    async function init() {
+        const response = await fetch("/evaluations/" + id);
+        const data = await response.json();
+
+		document.getElementById("project-name").value = data.project.id;
+		document.getElementById("evaluations-date").value = data.evaluation_date;
+		document.getElementById("evaluations-comment").value = data.comments;
+		document.getElementById("evaluations-points").value = data.score;
+		document.getElementById("evaluations-board").value = data.board_name;
+    }
+
+    // Gọi hàm khi trang được tải
+    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener("DOMContentLoaded", fetchProject);
+
+    // Hàm xử lý khi form được submit
+    document.getElementById("project-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const form = {
+            project: {id: document.getElementById("project-name").value},
+            evaluation_date: document.getElementById("evaluations-date").value,
+            comments: document.getElementById("evaluations-comment").value,
+            score: document.getElementById("evaluations-points").value,
+            board_name: document.getElementById("evaluations-board").value,
+        };
+
+        // Serialize the object as JSON
+        const jsonData = JSON.stringify(form);
+
+        console.log(jsonData);
+
+        try {
+            const response = await fetch("/evaluations/" + id, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: jsonData,
+            });
+
+            const message = await response.text(); // Lấy thông báo từ API
+            if (response.ok) {
+                alert(message); // Hiển thị thông báo thành công
+                // Điều hướng người dùng sau khi thành công
+                window.location.replace("/evaluations");
+            } else {
+                alert("Lỗi: " + message); // Hiển thị thông báo lỗi từ API
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            alert("Có lỗi xảy ra khi gửi dữ liệu!");
+        }
+    });
+
+
+</script>
+
+
+</body>
+</html>

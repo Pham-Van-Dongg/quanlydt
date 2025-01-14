@@ -10,7 +10,7 @@ public interface ProjectsService {
 	
 	public Projects getProjects(long prId);
 	
-	public Projects updateProjects(long prId, Projects pr);
+	public Projects updateProjects(Projects pr);
 	
 	public Projects deleteProjects(long id);
 }

@@ -30,6 +30,11 @@ public class ProjectsController {
         return "projects/index";
     }
 
+    @GetMapping("/createproject")
+    public String createProject(Model model) {
+        return "projects/create";
+    }
+
 	@GetMapping("/details")
 	public String projectDetails(Model model) {
 		return "projects/details";
@@ -71,9 +76,9 @@ public class ProjectsController {
     }
 
     //Cập nhật thông tin projects
-    @PutMapping("/update/{prId}")
-    public ResponseEntity<Projects> updateProjects(@PathVariable long prId, @RequestBody Projects pr) {
-        Projects updateProjects = this.projectsService.updateProjects(prId, pr);
+    @PostMapping("/update")
+    public ResponseEntity<Projects> updateProjects(@RequestBody Projects pr) {
+        Projects updateProjects = this.projectsService.updateProjects(pr);
         if (updateProjects == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

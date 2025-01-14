@@ -25,11 +25,9 @@
     </ul>
 </div>
 
-<!-- Content -->
 <div class="content">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-
             <button aria-controls="navbarNav" aria-expanded="false"
                     aria-label="Toggle navigation" class="navbar-toggler"
                     data-bs-target="#navbarNav" data-bs-toggle="collapse"
@@ -37,55 +35,108 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <div class="navbar-nav ms-auto">
                     <div class="navbar-brand" th:if="${#authentication.name != 'anonymousUser'}">
-
                         Welcome, <a class="navbar-brand"
                                     th:text="${#authentication.principal.fullName}">User</a>
-
                     </div>
-                    <li class="nav-item">
+                    <div class="nav-item">
                         <form method="post" th:action="@{/logout}">
                             <button class="btn btn-danger" type="submit">Đăng xuất</button>
                         </form>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
+    <!-- switching displays -->
+    <div class="d-flex justify-content-center gap-3" id="showing-details">
+        <div>
+            <input type="radio" id="project" class="info-display" name="info-display" value="project" checked>
+            <label for="project">Thông tin dự án</label>
+        </div>
+        <div>
+            <input type="radio" id="member" class="info-display" name="info-display" value="member">
+            <label for="member">Danh sách thành viên</label>
+        </div>
+    </div>
+
     <div class="container my-4">
-        <h1 class="text-center mb-3">Chi tiết dự án</h1>
-        <div class="d-flex justify-content-between">
-            <div id="project-infomation"></div>
+        <div id="project-info-display">
+            <h1 class="text-center mb-3">Thông tin dự án</h1>
+            <form id="project-form">
+                <div class="mb-3">
+                    <label class="form-label" for="project-name">Tên dự án</label>
+                    <input class="form-control" id="project-name" name="name" type="text" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="project-description">Mô tả dự án</label>
+                    <input class="form-control" id="project-description" name="description" type="text" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="project-start">Ngày bắt đầu</label>
+                    <input class="form-control" id="project-start" name="start-date" type="date" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="project-end">Dự kiến kết thúc</label>
+                    <input class="form-control" id="project-end" name="end-date" type="date">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="project-faculty">Khoa đào tạo</label>
+                    <select name="faculty" id="project-faculty" class="form-control"></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="project-status">Trạng thái</label>
+                    <select name="status" id="project-status" class="form-control">
+                        <option value="Pending">Đang chờ</option>
+                        <option value="InProgress">Đang thực hiện</option>
+                        <option value="Completed">Hoàn thành</option>
+                        <option value="Cancelled">Đã huỷ</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary w-100" type="submit">Sửa thông tin</button>
+                </div>
+
+            </form>
+            <hr />
+            <div>
+                <h3>Xoá dự án</h3>
+                <p>Việc này cũng sẽ xoá những thông tin sinh viên có trong dự án này.</p>
+                <button class="btn btn-danger float-end" onclick="deleteProject()">Xoá dự án</button>
+            </div>
         </div>
 
-        <hr />
-        <h1 class="text-center mb-3">Danh sách thành viên</h1>
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Họ Tên</th>
-                <th>Mã sinh viên</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody id="project-table-body">
+        <div id="member-list-display" style="display:none">
+            <h1 class="text-center mb-3">Danh sách thành viên</h1>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Họ Tên</th>
+                    <th>Mã sinh viên</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="project-table-body">
                 <tr>
                     <td>+</td>
                     <td class="mb-2">
-                        <input type="text" id="member-name" class="form-control" placeholder="Họ tên"/>
+                        <input class="form-control" id="member-name" placeholder="Họ tên" type="text"/>
                     </td>
                     <td>
-                        <input type="text" id="member-code" class="form-control" placeholder="Mã số sinh viên"/>
+                        <input class="form-control" id="member-code" placeholder="Mã số sinh viên" type="text"/>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-primary" style="height:fit-content" onclick="addMember()">Thêm sinh viên</button>
+                        <button class="btn btn-primary" onclick="addMember()" style="height:fit-content" type="button">Thêm
+                            sinh viên
+                        </button>
                     </td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -93,55 +144,48 @@
     #project-infomation > div > :nth-child(1) {
         font-weight: bold;
     }
+
     td {
         vertical-align: middle;
     }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    let projectId;
+    let params = new URLSearchParams(document.location.search);
+    let projectId = params.get("id");
+    let memberList = [];
 
     // Hàm fetch dữ liệu từ API và hiển thị lên giao diện
     async function fetchFaculties() {
         try {
-            let params = new URLSearchParams(document.location.search);
-            let name = params.get("id");
-            projectId = name;
-            const response = await fetch('/projects/' + name); // Gọi API
+
+            const response = await fetch('/projects/' + projectId); // Gọi API
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
 
             const data = await response.json(); // Parse JSON
+            const projectInfo = data.project;
 
-            // Show project details
-            const projectInfo = document.getElementById("project-infomation");
-            projectInfo.innerHTML = `
-<div>
-    <span>Tên dự án:</span>
-    <span>${data.project.name}</span>
-</div>
-<div>
-    <span>Trạng thái: </span>
-    <span>${data.project.status}</span>
-</div>
-<div>
-    <span>Ngày thực hiện:</span>
-    <span>${data.project.start_date || "n/a"}</span>
-</div>
-<div>
-    <span>Dự định kết thúc vào:</span>
-    <span>${data.project.end_date || "n/a"}</span>
-</div>
-<div>
-    <span>Khoa:</span>
-    <span>${data.project.faculty.name}</span>
-</div>
-      `
+            const resp = await fetch('/faculties/view');
+            const faculties = await resp.json();
+
+            faculties.forEach(e => {
+                document.getElementById("project-faculty").innerHTML += `
+                    <option value="${e.id}">${e.name}</option>`;
+            })
+
+            document.getElementById("project-name").value = projectInfo.name;
+            document.getElementById("project-description").value = projectInfo.description;
+            document.getElementById("project-start").value = projectInfo.startday;
+            document.getElementById("project-end").value = projectInfo.endday;
+            document.getElementById("project-faculty").value = projectInfo.faculty.id;
+            document.getElementById("project-status").value = projectInfo.status;
 
             // Hiển thị dữ liệu trong bảng
             const tableBody = document.getElementById('project-table-body');
             data.members.forEach((member, index) => {
+                memberList.push(member.id);
                 const row = `
                         <tr>
                             <td>${index + 1}</td>
@@ -161,24 +205,82 @@
         }
     }
 
+
+
+    // for displaying different page
+    let matches = document.querySelectorAll('.info-display')
+
+    for (let match in matches) {
+        matches[match].onchange = function() {
+            switch (this.value) {
+                case "project":
+                    document.getElementById("project-info-display").style.display = "";
+                    document.getElementById("member-list-display").style.display = "none";
+                    break;
+                case "member":
+                    document.getElementById("member-list-display").style.display = "";
+                    document.getElementById("project-info-display").style.display = "none";
+                    break;
+
+            }
+        }
+    }
+
+    // delete member off project
     async function handleDelete(id) {
         try {
             const response = await fetch('/projectmembers/delete/' + id, {method: 'DELETE'}); // Gọi API
             if (response.ok) window.location.reload();
-        }
-        catch (e) {
+        } catch (e) {
             console.error(e);
             document.getElementById('error-message').textContent = 'Delete operation failed.';
         }
     }
 
+    // delete the whole project
+    async function deleteProject() {
+        await memberList.forEach(member => handleDelete(member));
+        const response = await fetch('/projects/delete/' + projectId, {method: 'DELETE'});
+
+        if (response.ok) window.location.replace("/projects");
+    }
+
     // Gọi hàm khi trang được tải
     document.addEventListener('DOMContentLoaded', fetchFaculties);
+
+    document.getElementById("project-form").addEventListener('submit', async e => {
+        e.preventDefault();
+
+        const form = {
+            id: projectId,
+            name: document.getElementById("project-name").value,
+            description: document.getElementById("project-description").value,
+            startday: document.getElementById("project-start").value,
+            endday: document.getElementById("project-end").value,
+            status: document.getElementById("project-status").value,
+            faculty: { id: document.getElementById("project-faculty").value }
+        }
+
+        // Serialize the object as JSON
+        const jsonData = JSON.stringify(form);
+
+        console.log(jsonData)
+
+        const response = await fetch("/projects/update", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: jsonData
+        });
+
+        if (response.ok) window.location.reload();
+    });
 
     async function addMember() {
         // Create an object from form fields
         const formObject = {
-            project: { id: projectId },
+            project: {id: projectId},
             name: document.getElementById('member-name').value,
             masinhvien: document.getElementById('member-code').value,
             role: "Member"

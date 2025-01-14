@@ -12,6 +12,6 @@ public interface ProjectMembersService {
 	public List<ProjectMembers> getProjectMembersByProjectId(long prbId);
 	
 	public ProjectMembers updateProjectMembers(long prbId, ProjectMembers prb);
-	
+
 	public ProjectMembers deleteProjectMembers(long id);
 }

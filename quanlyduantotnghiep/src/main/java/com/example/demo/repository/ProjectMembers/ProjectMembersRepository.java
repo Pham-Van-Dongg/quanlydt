@@ -10,4 +10,3 @@ public interface ProjectMembersRepository extends JpaRepository<ProjectMembers, 
 
 
     List<ProjectMembers> findByProject_Id(long prbId);
-}

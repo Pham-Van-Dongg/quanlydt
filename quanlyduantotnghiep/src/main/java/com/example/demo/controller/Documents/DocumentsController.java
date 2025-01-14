@@ -1,5 +1,5 @@
 package com.example.demo.controller.Documents;
-
+  
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,14 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.Projects.Projects;
 import com.example.demo.entity.documents.Documents;
@@ -25,75 +18,91 @@ import com.example.demo.service.Documents.DocumentsService;
 @RequestMapping("/documents")
 public class DocumentsController {
 
-	@Autowired
-	public DocumentsService documentsService;
+    @Autowired
+    public DocumentsService documentsService;
 
-	@Autowired
-	private ProjectsRepository projectsRepository;
+    @Autowired
+    private ProjectsRepository projectsRepository;
 
-	public DocumentsController(DocumentsService documentsService) {
-		this.documentsService = documentsService;
-	}
+    public DocumentsController(DocumentsService documentsService) {
+        this.documentsService = documentsService;
+    }
 
-	@GetMapping("/view")
-	public ResponseEntity<List<Documents>> getDocuments() {
-		List<Documents> documents = this.documentsService.getDocuments();
-		return ResponseEntity.ok(documents);
-	}
+    @GetMapping("/create")
+    public String createProject(Model model) {
+        return "documents/create";
+    }
 
-	// Lấy thông tin đề tài theo ID
-	@GetMapping("/{docId}")
-	public ResponseEntity<Documents> getDocuments(@PathVariable long docId) {
-		Documents documents = this.documentsService.getDocuments(docId);
-		if (documents == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
-		return ResponseEntity.ok(documents);
-	}
+    @GetMapping("/update")
+    public String createUpdate(Model model) {
+        return "documents/update";
+    }
+    
+    @GetMapping("/view")
+    public ResponseEntity<List<Documents>> getDocuments() {
+        List<Documents> documents = this.documentsService.getDocuments();
+        if (documents.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(documents);
+        }
+        return ResponseEntity.ok(documents);
+    }
 
-//    @PostMapping("/save")
-//	  public String addDocuments(@ModelAttribute Documents doc) {
-//    	Documents documents = this.documentsService.addDocuments(doc);
-//	      return "redirect:/documents";
-//	  }	
-	@GetMapping("")
-	public String getDocuments(Model model) {
-		return "documents/form_documents";
-	}
+    @GetMapping("/{docId}")
+    public ResponseEntity<?> getDocuments(@PathVariable long docId) {
+        Documents documents = this.documentsService.getDocuments(docId);
+        if (documents == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
+        }
+        return ResponseEntity.ok(documents);
+    }
 
-	@PostMapping("/save")
-	public ResponseEntity<String> addDocuments(@RequestBody Documents documents) {
-		// Kiểm tra xem dự án có tồn tại không
-		Projects project = projectsRepository.findById(documents.getProjects().getId())
-				.orElseThrow(() -> new RuntimeException("Project not found"));
+    @GetMapping("")
+    public String getDocuments(Model model) {
+        return "documents/form_documents";
+    }
 
-		// Gán đối tượng project vào documents
-		documents.setProjects(project);
+    @PostMapping("/create")
+    public ResponseEntity<String> addDocuments(@RequestBody Documents documents) {
+        try {
+            // Kiểm tra xem dự án có tồn tại không
+            Projects project = projectsRepository.findById(documents.getProjects().getId())
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
 
-		// Lưu đối tượng documents vào cơ sở dữ liệu
-		documentsService.addDocuments(documents);
+            // Gán đối tượng project vào documents
+            documents.setProjects(project);
 
-		return ResponseEntity.ok("Document saved successfully");
-	}
+            // Lưu đối tượng documents vào cơ sở dữ liệu
+            documentsService.addDocuments(documents);
 
-// Cập nhật thông tin khoa
-	@PutMapping("/{docId}")
-	public ResponseEntity<Documents> updateFaculties(@PathVariable long docId, @RequestBody Documents doc) {
-		Documents documents = this.documentsService.updateDocuments(docId, doc);
-		if (documents == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		}
-		return ResponseEntity.ok(documents);
-	}
+            return ResponseEntity.ok("Document saved successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to save document: " + e.getMessage());
+        }
+    }
 
-// Xóa de tai
-	@DeleteMapping("/{docId}")
-	public ResponseEntity<Void> deleteDocuments(@PathVariable long docId) {
-		try {
-			this.documentsService.deleteDocuments(docId);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
-	}
+    @PutMapping("/{docId}")
+    public ResponseEntity<?> updateFaculties(@PathVariable long docId, @RequestBody Documents doc) {
+        try {
+            Documents documents = this.documentsService.updateDocuments(docId, doc);
+            if (documents == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Document not found");
+            }
+            return ResponseEntity.ok("Document updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update document: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{docId}")
+    public ResponseEntity<String> deleteDocuments(@PathVariable long docId) {
+        try {
+            this.documentsService.deleteDocuments(docId);
+            return ResponseEntity.ok("Document deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to delete document: " + e.getMessage());
+        }
+    }
 }

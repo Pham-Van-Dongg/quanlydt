@@ -4,10 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quản lý khoa</title>
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet" href="/index/index_css.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/index/index_css.css">
+	<link rel="stylesheet" href="/index/popup.css">
 <!-- Bootstrap JS -->
 
 </head>
@@ -18,10 +17,10 @@
 			<h3>Quản lý đề tài</h3>
 		</div>
 		<ul class="list-unstyled components">
-            <li><a th:href="@{/faculties}">Quản lý đề tài</a></li>
-            <li><a th:href="@{/evaluations}">Quản lý hội đồng đánh giá</a></li>
-            <li><a th:href="@{/documents}">Quản lý tài liệu</a></li>
-        </ul>
+			<li><a th:href="@{/faculties}">Quản lý đề tài</a></li>
+			<li><a th:href="@{/evaluations}">Quản lý hội đồng đánh giá</a></li>
+			<li><a th:href="@{/documents}">Quản lý tài liệu</a></li>
+		</ul>
 	</div>
 
 	<!-- Content -->
@@ -37,7 +36,8 @@
 				</button>
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav ms-auto">
-						<div class="navbar-brand" th:if="${#authentication.name != 'anonymousUser'}">
+						<div class="navbar-brand"
+							th:if="${#authentication.name != 'anonymousUser'}">
 
 							Welcome, <a class="navbar-brand"
 								th:text="${#authentication.principal.fullName}">User</a>
@@ -52,12 +52,70 @@
 				</div>
 			</div>
 		</nav>
+		<!-- Add Faculty Popup -->
+		<div class="modal" id="addFacultyModal" tabindex="-1"
+			aria-labelledby="addFacultyModalLabel" aria-hidden="true" style="position: fixed; top: 20%; left: 0%;">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addFacultyModalLabel">Thêm Khoa</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<form id="add-faculty-form">
+							<div class="mb-3">
+								<label for="add-name" class="form-label">Tên Khoa</label> <input
+									type="text" class="form-control" id="add-name" required>
+							</div>
+							<div class="mb-3">
+								<label for="add-description" class="form-label">Mô Tả</label>
+								<textarea class="form-control" id="add-description" rows="3"
+									required></textarea>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary"
+							onclick="saveNewFaculty()">Thêm</button>
+						<button type="button" class="btn btn-secondary"
+							onclick="close()" data-bs-dismiss="modal">Hủy</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- Popup chỉnh sửa khoa -->
+		<div id="edit-popup" class="popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: white; padding: 24px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
+			<h4>Chỉnh sửa khoa</h4>
+			<form id="edit-form">
+				<input type="hidden" id="edit-id">
+				<div class="mb-3">
+					<label for="edit-name" class="form-label">Tên khoa</label> <input
+						type="text" id="edit-name" class="form-control" required>
+				</div>
+				<div class="mb-3">
+					<label for="edit-description" class="form-label">Mô tả</label>
+					<textarea id="edit-description" class="form-control" rows="3"
+						required></textarea>
+				</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" onclick="saveEdit()">Lưu</button>
+						<button type="button" class="btn btn-secondary" onclick="closeEditPopup()">Hủy</button>
+					</div>
+			</form>
+		</div>
+
+		<!-- Overlay -->
+		<div id="popup-overlay"
+			style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;"></div>
 
 		<div class="container my-4">
 			<h1 class="text-center mb-3">Khoa</h1>
 
-			<a class="btn btn-primary mb-3" id="openModal">Thêm khoa</a>
-
+			<a href="javascript:void(0);" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addFacultyModal">Thêm khoa</a>
+			
 			<table class="table table-bordered">
 				<thead>
 					<tr>
@@ -80,6 +138,113 @@
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js">
 	</script>
 	<script>
+	function close() {
+	    // Ẩn popup và overlay
+	    document.getElementById('addFacultyModal').style.display = 'none';
+	    document.getElementById('popup-overlay').style.display = 'none';
+	}
+	async function saveNewFaculty() {
+	    const name = document.getElementById('add-name').value;
+	    const description = document.getElementById('add-description').value;
+
+	    try {
+	        const response = await fetch('/faculties/save', {
+	            method: 'POST',
+	            headers: {
+	                'Content-Type': 'application/json',
+	            },
+	            body: JSON.stringify({ name, description }),
+	        });
+
+	        const message = await response.text(); // Lấy thông báo từ API
+	        if (response.ok) {
+	            alert(message); // Hiển thị thông báo thành công
+	            document.getElementById('add-faculty-form').reset(); // Reset form
+	            close();
+	            fetchFaculties();
+
+	            // Xóa modal backdrop sau khi modal đóng
+	            const backdrop = document.querySelector('.modal-backdrop');
+	            if (backdrop) {
+	                backdrop.remove();
+	            }
+	        } else {
+	            alert('Lỗi: ' + message); // Hiển thị thông báo lỗi từ API
+	        }
+	    } catch (error) {
+	        console.error('Error adding faculty:', error);
+	        alert("Đã xảy ra lỗi khi thêm khoa. Vui lòng thử lại.");
+	    }
+	}
+	
+	function openEditPopup(id, name, description) {
+	    // Điền thông tin khoa vào form
+	    document.getElementById('edit-id').value = id;
+	    document.getElementById('edit-name').value = name;
+	    document.getElementById('edit-description').value = description;
+
+	    // Hiển thị popup và overlay
+	    document.getElementById('edit-popup').style.display = 'block';
+	    document.getElementById('popup-overlay').style.display = 'block';
+	}
+
+	function closeEditPopup() {
+	    // Ẩn popup và overlay
+	    document.getElementById('edit-popup').style.display = 'none';
+	    document.getElementById('popup-overlay').style.display = 'none';
+	}
+	
+	async function saveEdit() {
+	    const id = document.getElementById('edit-id').value;
+	    const name = document.getElementById('edit-name').value;
+	    const description = document.getElementById('edit-description').value;
+
+	    try {
+	        const response = await fetch(`/faculties/update/${id}`, {
+	            method: 'PUT',
+	            headers: {
+	                'Content-Type': 'application/json',
+	            },
+	            body: JSON.stringify({ name, description }),
+	        });
+
+	        // Kiểm tra trạng thái phản hồi
+	        const message = await response.text(); // Lấy thông báo từ API
+	        if (response.ok) {
+	            alert(message); // Hiển thị thông báo thành công
+	            closeEditPopup(); // Đóng popup
+	            fetchFaculties(); // Làm mới danh sách khoa
+	        } else {
+	            alert('Lỗi: ' + message); // Hiển thị thông báo lỗi từ API
+	        }
+	    } catch (error) {
+	        console.error('Error updating faculty:', error);
+	        alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+	    }
+	}
+
+	async function handleDelete(faId) {
+	    if (!confirm("Bạn có chắc chắn muốn xóa khoa này?")) {
+	        return; // Dừng lại nếu người dùng không xác nhận
+	    }
+	    try {
+	        const response = await fetch(`/faculties/delete/${faId}`, {
+	            method: 'DELETE',
+	        });
+	        const message = await response.text(); // Lấy thông báo từ server
+
+	        if (response.ok) {
+	            alert("Thành công: " + message);
+	            fetchFaculties(); // Cập nhật lại danh sách khoa
+	        } else {
+	            alert("Thất bại: " + message);
+	        }
+	    } catch (error) {
+	        console.error("Error deleting faculty:", error);
+	        alert("Đã xảy ra lỗi khi xóa khoa. Vui lòng thử lại.");
+	    }
+	}
+
         // Hàm fetch dữ liệu từ API và hiển thị lên giao diện
         async function fetchFaculties() {
             try {
@@ -98,10 +263,10 @@
                             <td>${index + 1}</td>
                             <td>${faculty.name}</td>
                             <td>${faculty.description}</td>
-                            <td>
-                        	<a class="btn btn-sm btn-primary" onclick="handleEdit(${faculty.id})">Sửa</a>
-                        	<a class="btn btn-sm btn-danger" onclick="handleDelete(${faculty.id})">Xóa</a>
-                    	</td>
+                            <td>           
+                         		<a class="btn btn-sm btn-primary" onclick="openEditPopup(${faculty.id}, '${faculty.name}', '${faculty.description}')">Sửa</a>
+                            	<a class="btn btn-sm btn-danger" onclick="handleDelete(${faculty.id})">Xóa</a>                      
+                    		</td>
                         </tr>
                        
                     `;

@@ -59,12 +59,12 @@
 		<div class="container my-4">
 			<h1 class="text-center mb-3">Khoa</h1>
 
-			<a class="btn btn-primary mb-3"  href="/faculties/create">Thêm chấm điểm</a>
+			<a class="btn btn-primary mb-3"  href="/faculties/create">Thêm</a>
 			
 			<table class="table table-bordered">
 				<thead>
 					<tr>
-						<th>Id</th>
+						<th>STT</th>
 						<th>Tên khoa</th>
 						<th>Mô tả</th>
 						<th>Chức năng</th>
@@ -123,7 +123,7 @@
                             <td>${faculty.name}</td>
                             <td>${faculty.description}</td>
                             <td>           
-                         		<a class="btn btn-sm btn-primary" onclick="">Sửa</a>
+                         		<a class="btn btn-sm btn-primary" href="/faculties/update?id=${faculty.id}">Sửa</a>
                             	<a class="btn btn-sm btn-danger" onclick="handleDelete(${faculty.id})">Xóa</a>                      
                     		</td>
                         </tr> 

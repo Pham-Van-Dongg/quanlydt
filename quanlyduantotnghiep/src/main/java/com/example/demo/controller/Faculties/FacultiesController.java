@@ -42,6 +42,11 @@ public class FacultiesController {
 		return "faculties/form_faculties";
 	}
 
+	@GetMapping("/update")
+	public String editFaculty(Model model) {
+		return "faculties/edit";
+	}
+
 //	@GetMapping("/{faId}")
 //	public Faculties getFaculties(@PathVariable long faId) {
 //		return this.facultiesService.getFaculties(faId);
